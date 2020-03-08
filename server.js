@@ -59,3 +59,4 @@ app.get('/crud/:location',(req, res) => main.getTableLocation(req, res, db));
 app.listen(process.env.PORT || 3000, () => {
     console.log(`app is running on port ${process.env.PORT || 3000}`)
   });
+  
