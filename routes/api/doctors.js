@@ -1,4 +1,11 @@
-const getTableData = (req, res, db) => {
+const express = require("express");
+const router = express.Router();
+const auth = require("../../middleware/auth");
+const db = require("../../modules/db");
+// @route   GET api/posts/test
+// @desc    Tests post route
+// @access  Public
+router.get("/", auth, async (req, res) => {
   db.select("*")
     .from("doctor")
     .then((items) => {
@@ -9,9 +16,10 @@ const getTableData = (req, res, db) => {
       }
     })
     .catch((err) => res.status(400).json({ dbError: "db error" }));
-};
-const getTableLocation = (req, res, db) => {
-  db.select("*")
+});
+router.get("/:location", auth, async (req, res) => {
+  await db
+    .select("*")
     .from("doctor")
     .where("location", req.params.location)
 
@@ -23,23 +31,5 @@ const getTableLocation = (req, res, db) => {
       }
     })
     .catch((err) => res.status(400).json({ dbError: "db error" }));
-};
-
-const getUserData = (req, res, db) => {
-  db.select("*")
-    .from("patient")
-    .then((items) => {
-      if (items.length) {
-        res.json(items);
-      } else {
-        res.json({ dataExists: "false" });
-      }
-    })
-    .catch((err) => res.status(400).json({ dbError: "db error" }));
-};
-
-module.exports = {
-  getTableData,
-  getTableLocation,
-  getUserData,
-};
+});
+module.exports = router;

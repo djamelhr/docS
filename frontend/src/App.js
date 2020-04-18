@@ -1,48 +1,46 @@
-import React, { Component } from 'react'
-import { Container, Row, Col } from 'reactstrap'
-//import DataTable from './Components/Tables/DataTable'
-import CardDoctor from './Components/Card/Card';
-import Search from './Components/SearchBar/Search';
+import React, { Fragment, useEffect } from "react";
 
+//import Search from "./Components/SearchBar/Search";
+import { loadUser } from "../src/actions/authAction";
+import Navbar from "./Components/layout/Navbar";
+import Landing from "./Components/layout/Landing";
+import Login from "./Components/auth/Login";
+import Register from "./Components/auth/Register";
+import Alert from "./Components/layout/Alert";
+import Dashboard from "./Components/dashboard/Dashboard";
+import { Provider } from "react-redux";
+import store from "./store";
+import { useSelector, useDispatch } from "react-redux";
+import setAuthToken from "./utils/setAuthToken";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+//import SignUp from './Components/authetification/SignUp'
 
-class App extends Component {
-  state = {
-    items: []
+const App = () => {
+  if (localStorage.token) {
+    setAuthToken(localStorage.token);
   }
+  useEffect(() => {
+    store.dispatch(loadUser());
+  }, []);
+  return (
+    <Provider store={store}>
+      <Router>
+        <Fragment>
+          <Navbar />
+          <Route exact path="/" component={Landing} />
+          <section className="container">
+            <Alert />
 
-  getItems(){
-    fetch('http://localhost:3000/crud')
-      .then(response => response.json())
-      .then(items => this.setState({items}))
-      .catch(err => console.log(err))
-  }
+            <Switch>
+              <Route exact path="/register" component={Register} />
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/dashboard" component={Dashboard} />
+            </Switch>
+          </section>
+        </Fragment>
+      </Router>
+    </Provider>
+  );
+};
 
- 
-  componentDidMount(){
-    this.getItems()
-  }
-
-  render() {
-    return (
-      <Container className="App">
-        <Row>
-          <Col>
-            <h1 style={{margin: "20px 0"}}>zocdoc</h1>
-          </Col>
-        </Row>
-        <Row style={{margin: "20px 0"}}>
-          <Col>
-            <Search />
-          </Col>
-        </Row>
-        <Row>
-          <Col sm="8">
-            <CardDoctor items={this.state.items}/>
-          </Col>
-        </Row>
-      </Container>
-    )
-  }
-}
-
-export default App
+export default App;
